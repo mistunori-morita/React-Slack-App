@@ -10,7 +10,8 @@ export default class Register extends Component {
     email: '',
     password: '',
     passwordConfirmation: '',
-    errors: []
+    errors: [],
+    loading: false
   }
 
 
@@ -56,24 +57,34 @@ export default class Register extends Component {
   }
 
   handleSubmit = (event) => {
+    event.preventDefault();
+
     if(this.isFormValid()){
-      event.preventDefault();
+      this.setState({ errors: [], loading: true});
+
       //fireaseのメソッド
       firebase
       .auth()
       .createUserWithEmailAndPassword(this.state.email, this.state.password)
       .then(createdUser => {
         console.log(createdUser);
+        this.setState({loading: false})
       })
       .catch(err => {
         console.error(err);
+        this.setState({ errors: this.state.errors.concat(err),loading: false})
       })
     }
   }
 
 
+  handleInputError = (errors, inputName) => {
+    return errors.some(error => error.message.toLowerCase().includes(inputName)) ? 'error' : ''
+  }
+
+
   render() {
-    const { username, email, password, passwordConfirmation, errors} = this.state;
+    const { username, email, password, passwordConfirmation, errors, loading} = this.state;
 
 
     return <Grid textAlign="center" verticalAlign="middle" className="app">
@@ -85,20 +96,18 @@ export default class Register extends Component {
           <Form onSubmit={this.handleSubmit} size="large">
             <Segment stacked>
               <Form.Input fluid name="username" icon="user" iconPosition="left" placeholder="Username" valuse={username} type="text" onChange={this.handleChange} />
-              <Form.Input fluid name="email" icon="mail" iconPosition="left" placeholder="Email Address" valuse={email} type="email" onChange={this.handleChange} />
-              <Form.Input fluid name="password" icon="lock" iconPosition="left" placeholder="Password" valuse={password} type="password" onChange={this.handleChange} />
-              <Form.Input fluid name="passwordConfirmation" icon="repeat" iconPosition="left" placeholder="Password Confirmation" valuse={passwordConfirmation} type="password" onChange={this.handleChange} />
-              <Button color="orange" fluid size="large">
+              <Form.Input fluid name="email" icon="mail" iconPosition="left" placeholder="Email Address" valuse={email} type="email" className={this.handleInputError(errors, "email")} onChange={this.handleChange} />
+              <Form.Input fluid name="password" icon="lock" iconPosition="left" placeholder="Password" valuse={password} type="password" className={this.handleInputError(errors, "password")} onChange={this.handleChange} />
+              <Form.Input fluid name="passwordConfirmation" icon="repeat" iconPosition="left" placeholder="Password Confirmation" valuse={passwordConfirmation} type="password" className={this.handleInputError(errors, "passwordConfirmation")} onChange={this.handleChange} />
+              <Button disabled={loading} className={loading ? "loading" : ""} color="orange" fluid size="large">
                 Submit
               </Button>
             </Segment>
           </Form>
-          {errors.length > 0 && (
-            <Message error>
+          {errors.length > 0 && <Message error>
               <h3>Error</h3>
               {this.displayErrors(errors)}
-            </Message>
-          )}
+            </Message>}
           <Message>
             Already a user? <Link to="/login">Login</Link>
           </Message>
