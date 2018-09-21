@@ -34,3 +34,4 @@ firebase.initializeApp(config);
 export default firebase;
 ```
 
+- Authenticationでプロバイダ（メールとかfbとかtw）でログインできる選択をする（※これしないと400エラー）
