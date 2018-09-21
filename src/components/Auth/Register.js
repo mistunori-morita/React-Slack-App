@@ -3,7 +3,6 @@ import { Grid, Form, Segment, Button, Header, Message, Icon} from 'semantic-ui-r
 import { Link } from 'react-router-dom'
 import firebase from '../../firebase'
 import md5 from 'md5'
-import { create } from 'domain';
 
 export default class Register extends Component {
 
@@ -110,9 +109,9 @@ export default class Register extends Component {
 
     return <Grid textAlign="center" verticalAlign="middle" className="app">
         <Grid.Column style={{ maxWidth: 450 }}>
-          <Header as="h2" icon color="orange" textAlign="center">
+          <Header as="h1" icon color="orange" textAlign="center">
             <Icon name="address book outline" color="orange" />
-            DevChat
+            Register DevChat
           </Header>
           <Form onSubmit={this.handleSubmit} size="large">
             <Segment stacked>
