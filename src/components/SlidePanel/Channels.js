@@ -34,14 +34,12 @@ export default class Channels extends Component {
   render() {
     const { channels , modal } = this.state
 
-    return (
-      <div>
-        <Menu.Menu style={{ paddingBottom: '2em'}}>
+    return <div>
+        <Menu.Menu style={{ paddingBottom: "2em" }}>
           <Menu.Item>
             <span>
-              <Icon name="exchange"/> CHANNELS
-            </span>{ " " }
-            ({ channels.length}) <Icon name="add" onClick={this.openModal}/>
+              <Icon name="exchange" /> CHANNELS
+            </span> ({channels.length}) <Icon name="add" onClick={this.openModal} />
           </Menu.Item>
         </Menu.Menu>
 
@@ -50,36 +48,23 @@ export default class Channels extends Component {
           <Modal.Content>
             <Form>
               <Form.Field>
-                <Input 
-                  fluid
-                  label="Name of Channel"
-                  name="ChannelName"
-                  onChange={this.handleChange}
-
-                />
+                <Input fluid label="Name of Channel" name="channelName" onChange={this.handleChange} />
               </Form.Field>
               <Form.Field>
-                <Input 
-                  fluid
-                  label="About the Channel"
-                  name="channelDetails"
-                  onChange={this.handleChange}
-
-                />
+                <Input fluid label="About the Channel" name="channelDetails" onChange={this.handleChange} />
               </Form.Field>
             </Form>
           </Modal.Content>
 
           <Modal.Actions>
             <Button color="green" inverted>
-             <Icon name="checkmark"/> Add
+              <Icon name="checkmark" /> Add
             </Button>
             <Button color="red" inverted onClick={this.closeModal}>
-             <Icon name="remove"/> Cancel
+              <Icon name="remove" /> Cancel
             </Button>
           </Modal.Actions>
         </Modal>
-      </div>
-    )
+      </div>;
   }
 }
