@@ -6,7 +6,7 @@ import { setCurrentChannel } from '../../actions'
 
 class Channels extends Component {
   state = {
-    activeChannel: '',
+    activeChannel: "",
     user: this.props.currentUser,
     channels: [],
     channelName: "",
@@ -20,6 +20,10 @@ class Channels extends Component {
     this.addListeners();
   };
 
+  componentWillUnmount = () => {
+    this.removeListeners();
+  };
+
   addListeners = () => {
     let loadedChannels = [];
     this.state.channelsRef.on("child_added", snap => {
@@ -29,11 +33,16 @@ class Channels extends Component {
     });
   };
 
+  removeListeners = () => {
+      this.state.channelsRef.off();
+  }
+
+
   setFirstChannel = () => {
     const firstChannel = this.state.channels[0];
     if (this.state.firstLoad && this.state.channels.length > 0) {
       this.props.setCurrentChannel(firstChannel);
-      this.setActiveChannel(firstChannel)
+      this.setActiveChannel(firstChannel);
     }
 
     this.setState({ firstLoad: false });
@@ -95,8 +104,8 @@ class Channels extends Component {
   };
 
   setActiveChannel = channel => {
-    this.setState({ activeChannel: channel.id})
-  }
+    this.setState({ activeChannel: channel.id });
+  };
 
   diplayChannels = channels =>
     channels.length > 0 &&
