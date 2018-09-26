@@ -5,36 +5,44 @@ import { connect } from 'react-redux'
 import { setCurrentChannel } from '../../actions'
 
 class Channels extends Component {
-
   state = {
+    activeChannel: '',
     user: this.props.currentUser,
     channels: [],
-    channelName: '',
-    channelDetails: '',
-    channelsRef: firebase.database().ref('channels'),
-    modal: false
-  }
+    channelName: "",
+    channelDetails: "",
+    channelsRef: firebase.database().ref("channels"),
+    modal: false,
+    firstLoad: true
+  };
 
   componentDidMount = () => {
     this.addListeners();
-  }
-
+  };
 
   addListeners = () => {
-    let loadedChannels = []
-    this.state.channelsRef.on('child_added', snap => {
-      loadedChannels.push(snap.val())
+    let loadedChannels = [];
+    this.state.channelsRef.on("child_added", snap => {
+      loadedChannels.push(snap.val());
       console.log(loadedChannels);
-      this.setState({ channels: loadedChannels });
-    })
+      this.setState({ channels: loadedChannels }, () => this.setFirstChannel());
+    });
+  };
 
-  }
+  setFirstChannel = () => {
+    const firstChannel = this.state.channels[0];
+    if (this.state.firstLoad && this.state.channels.length > 0) {
+      this.props.setCurrentChannel(firstChannel);
+      this.setActiveChannel(firstChannel)
+    }
 
+    this.setState({ firstLoad: false });
+  };
 
   addChannel = () => {
     const { channelsRef, channelName, channelDetails, user } = this.state;
 
-    const key = channelsRef.push().key
+    const key = channelsRef.push().key;
 
     const newChannel = {
       id: key,
@@ -50,76 +58,79 @@ class Channels extends Component {
       .child(key)
       .update(newChannel)
       .then(() => {
-        this.setState({ channelName: "", channelDetails: '' });
-        this.closeModal()
-        console.log('channel Added')
+        this.setState({ channelName: "", channelDetails: "" });
+        this.closeModal();
+        console.log("channel Added");
       })
       .catch(err => {
         console.error(err);
-      })
-
-  }
-
+      });
+  };
 
   handleSubmit = event => {
     event.preventDefault();
-    if(this.isFormValid(this.state)){
+    if (this.isFormValid(this.state)) {
       this.addChannel();
     }
-  }
+  };
 
-
-  isFormValid = ({ channelName, channelDetails }) => channelName && channelDetails;
-
+  isFormValid = ({ channelName, channelDetails }) =>
+    channelName && channelDetails;
 
   openModal = () => {
     this.setState({
       modal: true
-    })
-  }
+    });
+  };
 
   closeModal = () => {
     this.setState({
       modal: false
-    })
+    });
+  };
+
+  changeChannel = channel => {
+    this.setActiveChannel(channel);
+    this.props.setCurrentChannel(channel);
+  };
+
+  setActiveChannel = channel => {
+    this.setState({ activeChannel: channel.id})
   }
 
-  changeChannel = channle => {
-    this.props.setCurrentChannel(channle)
-  }
-
-  diplayChannels = channels => (
-    channels.length > 0 && channels.map(channel => (
+  diplayChannels = channels =>
+    channels.length > 0 &&
+    channels.map(channel => (
       <Menu.Item
         key={channel.id}
         onClick={() => this.changeChannel(channel)}
         name={channel.name}
-        style={{ opacity: 0.7}}
+        style={{ opacity: 0.7 }}
+        active={channel.id === this.state.activeChannel}
       >
-       # { channel.name }
+        # {channel.name}
       </Menu.Item>
-    ))
-  )
-
+    ));
 
   handleChange = event => {
     this.setState({
       [event.target.name]: event.target.value
-    })
-  }
-
+    });
+  };
 
   render() {
-    const { channels , modal } = this.state
+    const { channels, modal } = this.state;
 
-    return <div>
+    return (
+      <div>
         <Menu.Menu style={{ paddingBottom: "2em" }}>
           <Menu.Item>
             <span>
               <Icon name="exchange" /> CHANNELS
-            </span> ({channels.length}) <Icon name="add" onClick={this.openModal} />
+            </span>{" "}
+            ({channels.length}) <Icon name="add" onClick={this.openModal} />
           </Menu.Item>
-        {this.diplayChannels(channels)}
+          {this.diplayChannels(channels)}
         </Menu.Menu>
 
         <Modal basic open={modal} onClose={this.closeModal}>
@@ -127,10 +138,20 @@ class Channels extends Component {
           <Modal.Content>
             <Form onSubmit={this.handleSubmit}>
               <Form.Field>
-                <Input fluid label="Name of Channel" name="channelName" onChange={this.handleChange} />
+                <Input
+                  fluid
+                  label="Name of Channel"
+                  name="channelName"
+                  onChange={this.handleChange}
+                />
               </Form.Field>
               <Form.Field>
-                <Input fluid label="About the Channel" name="channelDetails" onChange={this.handleChange} />
+                <Input
+                  fluid
+                  label="About the Channel"
+                  name="channelDetails"
+                  onChange={this.handleChange}
+                />
               </Form.Field>
             </Form>
           </Modal.Content>
@@ -144,7 +165,8 @@ class Channels extends Component {
             </Button>
           </Modal.Actions>
         </Modal>
-      </div>;
+      </div>
+    );
   }
 }
 
