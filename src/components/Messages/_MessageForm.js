@@ -1,34 +1,31 @@
-import React, { Component } from 'react'
-import { Segment, Button, Input } from 'semantic-ui-react'
-import firebase from '../../firebase'
-import FileModal from './FileModal'
-import uuidv4 from 'uuid/v4'
+import React from "react";
+import uuidv4 from "uuid/v4";
+import firebase from "../../../../../Downloads/Upload-Image-File-Post-Image-Message/src/firebase";
+import { Segment, Button, Input } from "semantic-ui-react";
 
+import FileModal from "../../../../../Downloads/Upload-Image-File-Post-Image-Message/src/components/Messages/FileModal";
 
-export default class MessagesForm extends Component {
- state ={
-   storageRef: firebase.storage().ref(),
-   messages: '',
-   uploadState: '',
-   percnetUploaded: 0,
-   uploadTask: null,
-   channel: this.props.currentChannel,
-   user: this.props.currentUser,
-   loading: false,
-   errors: [],
-   modal: false
- }
+class MessageForm extends React.Component {
+  state = {
+    storageRef: firebase.storage().ref(),
+    uploadTask: null,
+    uploadState: "",
+    percentUploaded: 0,
+    message: "",
+    channel: this.props.currentChannel,
+    user: this.props.currentUser,
+    loading: false,
+    errors: [],
+    modal: false
+  };
+
+  openModal = () => this.setState({ modal: true });
+
+  closeModal = () => this.setState({ modal: false });
 
   handleChange = event => {
-    this.setState({
-      [event.target.name]: event.target.value
-    })
-  }
-
-
-  openModal = () => this.setState({ modal: true })
-  closeModal = () => this.setState({ modal: false })
-
+    this.setState({ [event.target.name]: event.target.value });
+  };
 
   createMessage = (fileUrl = null) => {
     const message = {
@@ -38,45 +35,42 @@ export default class MessagesForm extends Component {
         name: this.state.user.displayName,
         avatar: this.state.user.photoURL
       }
+    };
+    if (fileUrl !== null) {
+      message["image"] = fileUrl;
+    } else {
+      message["content"] = this.state.message;
     }
-    if(fileUrl !== null){
-      message['image'] = fileUrl;
-    }else{
-      message['content'] = this.state.message;
-    }
-    return message
-  }
+    return message;
+  };
 
- sendMessage = () => {
-   const { messagesRef } = this.props
-   const { message, channel } =this.state;
+  sendMessage = () => {
+    const { messagesRef } = this.props;
+    const { message, channel } = this.state;
 
-   if(message){
-    this.setState({
-      loading: true
-    })
-
-    messagesRef
-      .child(channel.id)
-      .push()
-      .set(this.createMessage())
-      .then(() => {
-        this.setState({ loading: false, message: '', errors: []})
-      })
-      .catch(err => {
-        console.error(err)
-        this.setState({
-          loading: false,
-          errors: this.state.errors.concat(err) 
+    if (message) {
+      this.setState({ loading: true });
+      messagesRef
+        .child(channel.id)
+        .push()
+        .set(this.createMessage())
+        .then(() => {
+          this.setState({ loading: false, message: "", errors: [] });
         })
-      })
-   }else{
-     this.setState({
-       errors: this.state.errors.concat({ message: 'Add a message' })
-     })
-   }
- }
- 
+        .catch(err => {
+          console.error(err);
+          this.setState({
+            loading: false,
+            errors: this.state.errors.concat(err)
+          });
+        });
+    } else {
+      this.setState({
+        errors: this.state.errors.concat({ message: "Add a message" })
+      });
+    }
+  };
+
   uploadFile = (file, metadata) => {
     const pathToUpload = this.state.channel.id;
     const ref = this.props.messagesRef;
@@ -124,49 +118,54 @@ export default class MessagesForm extends Component {
     );
   };
 
-  sendFileMessage = (fileUrl, ref, pathToUpload) => {
-    ref.child(pathToUpload)
-    .push()
-    .set(this.createMessage(fileUrl))
-    .then(() => {
-      this.setState({ uploadState: 'done'})
-    })
-    .catch(err => {
-      console.error(err)
-      this.setState({
-        errors: this.state.erros.concat(err)
-      })
-    })
-  }
 
+
+  sendFileMessage = (fileUrl, ref, pathToUpload) => {
+    ref
+      .child(pathToUpload)
+      .push()
+      .set(this.createMessage(fileUrl))
+      .then(() => {
+        this.setState({ uploadState: "done" });
+      })
+      .catch(err => {
+        console.error(err);
+        this.setState({
+          errors: this.state.errors.concat(err)
+        });
+      });
+  };
 
   render() {
-    const { errors, message, loading, modal} = this.state;
+    const { errors, message, loading, modal } = this.state;
+
     return (
-      <Segment className="messages__form">
+      <Segment className="message__form">
         <Input
           fluid
+          name="message"
           onChange={this.handleChange}
           value={message}
-          name="message"
-          style={{marginBottom: '0.7em'}}
-          lable={<Button icon={'add'} />}
+          style={{ marginBottom: "0.7em" }}
+          label={<Button icon={"add"} />}
           labelPosition="left"
-          placeholder="Write your message"
           className={
-            errors.some(error => error.message.includes('message')) ? 'error' : ''
+            errors.some(error => error.message.includes("message"))
+              ? "error"
+              : ""
           }
+          placeholder="Write your message"
         />
         <Button.Group icon widths="2">
           <Button
             onClick={this.sendMessage}
-            color="orange"
             disabled={loading}
+            color="orange"
             content="Add Reply"
             labelPosition="left"
             icon="edit"
           />
-          <Button 
+          <Button
             color="teal"
             onClick={this.openModal}
             content="Upload Media"
@@ -180,6 +179,8 @@ export default class MessagesForm extends Component {
           />
         </Button.Group>
       </Segment>
-    )
+    );
   }
 }
+
+export default MessageForm;
