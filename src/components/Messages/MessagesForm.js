@@ -3,12 +3,13 @@ import { Segment, Button, Input } from 'semantic-ui-react'
 import firebase from '../../firebase'
 import FileModal from './FileModal'
 import uuidv4 from 'uuid/v4'
-
+import ProgressBar from './ProgressBar'
 
 export default class MessagesForm extends Component {
  state ={
    storageRef: firebase.storage().ref(),
    messages: '',
+   percentUploaded: '',
    uploadState: '',
    percnetUploaded: 0,
    uploadTask: null,
@@ -94,6 +95,7 @@ export default class MessagesForm extends Component {
             const percentUploaded = Math.round(
               (snap.bytesTransferred / snap.totalBytes) * 100
             );
+            this.props.isProgressBarVisble(percentUploaded);
             this.setState({ percentUploaded });
           },
           err => {
@@ -141,7 +143,7 @@ export default class MessagesForm extends Component {
 
 
   render() {
-    const { errors, message, loading, modal} = this.state;
+    const { errors, message, loading, modal, uploadState, percentUploaded } = this.state;
     return (
       <Segment className="messages__form">
         <Input
@@ -168,17 +170,22 @@ export default class MessagesForm extends Component {
           />
           <Button 
             color="teal"
+            disabled={uploadState === 'uploading'}
             onClick={this.openModal}
             content="Upload Media"
             labelPosition="right"
             icon="cloud upload"
           />
+          </Button.Group>
           <FileModal
             modal={modal}
             closeModal={this.closeModal}
             uploadFile={this.uploadFile}
           />
-        </Button.Group>
+        <ProgressBar
+          uploadState={uploadState}
+          percentUploaded={percentUploaded}
+        />
       </Segment>
     )
   }
