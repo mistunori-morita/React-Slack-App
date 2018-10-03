@@ -6,19 +6,19 @@ import uuidv4 from 'uuid/v4'
 import ProgressBar from './ProgressBar'
 
 export default class MessagesForm extends Component {
- state ={
-   storageRef: firebase.storage().ref(),
-   messages: '',
-   percentUploaded: '',
-   uploadState: '',
-   percnetUploaded: 0,
-   uploadTask: null,
-   channel: this.props.currentChannel,
-   user: this.props.currentUser,
-   loading: false,
-   errors: [],
-   modal: false
- }
+  state = {
+    storageRef: firebase.storage().ref(),
+    messages: '',
+    percentUploaded: '',
+    uploadState: '',
+    percnetUploaded: 0,
+    uploadTask: null,
+    channel: this.props.currentChannel,
+    user: this.props.currentUser,
+    loading: false,
+    errors: [],
+    modal: false
+  }
 
   handleChange = event => {
     this.setState({
@@ -40,48 +40,57 @@ export default class MessagesForm extends Component {
         avatar: this.state.user.photoURL
       }
     }
-    if(fileUrl !== null){
+    if (fileUrl !== null) {
       message['image'] = fileUrl;
-    }else{
+    } else {
       message['content'] = this.state.message;
     }
     return message
   }
 
- sendMessage = () => {
-   const { messagesRef } = this.props
-   const { message, channel } =this.state;
+  sendMessage = () => {
+    const { getMessagesRef } = this.props
+    const { message, channel } = this.state;
 
-   if(message){
-    this.setState({
-      loading: true
-    })
-
-    messagesRef
-      .child(channel.id)
-      .push()
-      .set(this.createMessage())
-      .then(() => {
-        this.setState({ loading: false, message: '', errors: []})
+    if (message) {
+      this.setState({
+        loading: true
       })
-      .catch(err => {
-        console.error(err)
-        this.setState({
-          loading: false,
-          errors: this.state.errors.concat(err) 
+
+      getMessagesRef()
+        .child(channel.id)
+        .push()
+        .set(this.createMessage())
+        .then(() => {
+          this.setState({ loading: false, message: '', errors: [] })
         })
+        .catch(err => {
+          console.error(err)
+          this.setState({
+            loading: false,
+            errors: this.state.errors.concat(err)
+          })
+        })
+    } else {
+      this.setState({
+        errors: this.state.errors.concat({ message: 'Add a message' })
       })
-   }else{
-     this.setState({
-       errors: this.state.errors.concat({ message: 'Add a message' })
-     })
-   }
- }
- 
+    }
+  }
+
+  getPath = () => {
+    if(this.props.isPrivateChannel){
+      return `chat/private-${this.state.channel.id}`;
+    }else{
+      return 'chat/public';
+    }
+  }
+
+
   uploadFile = (file, metadata) => {
     const pathToUpload = this.state.channel.id;
-    const ref = this.props.messagesRef;
-    const filePath = `chat/public/${uuidv4()}.jpg`;
+    const ref = this.props.getMessagesRef();
+    const filePath = `${this.getPath()}/${uuidv4()}.jpg`;
 
     this.setState(
       {
@@ -128,17 +137,17 @@ export default class MessagesForm extends Component {
 
   sendFileMessage = (fileUrl, ref, pathToUpload) => {
     ref.child(pathToUpload)
-    .push()
-    .set(this.createMessage(fileUrl))
-    .then(() => {
-      this.setState({ uploadState: 'done'})
-    })
-    .catch(err => {
-      console.error(err)
-      this.setState({
-        errors: this.state.erros.concat(err)
+      .push()
+      .set(this.createMessage(fileUrl))
+      .then(() => {
+        this.setState({ uploadState: 'done' })
       })
-    })
+      .catch(err => {
+        console.error(err)
+        this.setState({
+          errors: this.state.erros.concat(err)
+        })
+      })
   }
 
 
@@ -151,7 +160,7 @@ export default class MessagesForm extends Component {
           onChange={this.handleChange}
           value={message}
           name="message"
-          style={{marginBottom: '0.7em'}}
+          style={{ marginBottom: '0.7em' }}
           lable={<Button icon={'add'} />}
           labelPosition="left"
           placeholder="Write your message"
@@ -168,7 +177,7 @@ export default class MessagesForm extends Component {
             labelPosition="left"
             icon="edit"
           />
-          <Button 
+          <Button
             color="teal"
             disabled={uploadState === 'uploading'}
             onClick={this.openModal}
@@ -176,12 +185,12 @@ export default class MessagesForm extends Component {
             labelPosition="right"
             icon="cloud upload"
           />
-          </Button.Group>
-          <FileModal
-            modal={modal}
-            closeModal={this.closeModal}
-            uploadFile={this.uploadFile}
-          />
+        </Button.Group>
+        <FileModal
+          modal={modal}
+          closeModal={this.closeModal}
+          uploadFile={this.uploadFile}
+        />
         <ProgressBar
           uploadState={uploadState}
           percentUploaded={percentUploaded}
