@@ -3,19 +3,20 @@ import UserPanel from './UserPanel'
 import Channels from './Channels'
 import { Menu } from 'semantic-ui-react'
 import DirectMessages from './DirectMessages'
-
+import Starred from './Starred'
 export default class SlidePanel extends Component {
   render() {
-    const { currentUser} = this.props;
+    const { currentUser } = this.props;
     return (
-      <Menu 
-      size="large"
+      <Menu
+        size="large"
         inverted
         fixed="left"
         vertical
-        style={{background: '#4c3c4c', fontSize: '1.2rem'}}
+        style={{ background: '#4c3c4c', fontSize: '1.2rem' }}
       >
         <UserPanel currentUser={currentUser} />
+        <Starred />
         <Channels currentUser={currentUser} />
         <DirectMessages currentUser={currentUser} />
       </Menu>
