@@ -1,7 +1,9 @@
 # React-slack-app
 
-## react-routerおさらい
-- react-routerを使って呼び出したいコンポーネントをindex.jsのRootで書く
+## react-router おさらい
+
+- react-router を使って呼び出したいコンポーネントを index.js の Root で書く
+
 ```
  const Root = () => (
   <Router>
@@ -14,11 +16,13 @@
 )
 ```
 
-## firebaseのセットアップ
-- firebaseをググってログインして[プロジェクトを追加]の鉄板の流れ
-- リダイレクトで管理画面に飛ぶので[開始するアプリ]でwebを選択
-- scriptをコピーしてsrc/firebase.jsを使ってペタッとはる
-- gitignoreに一応firebase.jsを追加しておく
+## firebase のセットアップ
+
+- firebase をググってログインして[プロジェクトを追加]の鉄板の流れ
+- リダイレクトで管理画面に飛ぶので[開始するアプリ]で web を選択
+- script をコピーして src/firebase.js を使ってペタッとはる
+- gitignore に一応 firebase.js を追加しておく
+
 ```
 import firebase from 'firebase/app';
 import 'firebase/auth'
@@ -34,4 +38,10 @@ firebase.initializeApp(config);
 export default firebase;
 ```
 
-- Authenticationでプロバイダ（メールとかfbとかtw）でログインできる選択をする（※これしないと400エラー）
+- Authentication でプロバイダ（メールとか fb とか tw）でログインできる選択をする（※これしないと 400 エラー）
+
+## scroll 系
+
+- Element.scrollIntoView()
+- https://developer.mozilla.org/ja/docs/Web/API/Element/scrollIntoView
+- これ便利
