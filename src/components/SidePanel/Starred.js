@@ -1,15 +1,14 @@
-import React, { Component } from "react";
-import { connect } from 'react-redux'
-import firebase from '../../firebase'
-import { setCurrentChannel, setPrivateChannel } from '../../actions'
+import React from "react";
+import firebase from "../../firebase";
+import { connect } from "react-redux";
+import { setCurrentChannel, setPrivateChannel } from "../../actions";
 import { Menu, Icon } from "semantic-ui-react";
 
-
-class Starred extends Component {
+class Starred extends React.Component {
   state = {
     user: this.props.currentUser,
-    usersRef: firebase.database().ref('users'),
-    activeChannel: '',
+    usersRef: firebase.database().ref("users"),
+    activeChannel: "",
     starredChannels: []
   };
 
@@ -52,9 +51,9 @@ class Starred extends Component {
     this.props.setPrivateChannel(false);
   };
 
-  displayChannels = starredChannel =>
-    starredChannel.length > 0 &&
-    starredChannel.map(channel => (
+  displayChannels = starredChannels =>
+    starredChannels.length > 0 &&
+    starredChannels.map(channel => (
       <Menu.Item
         key={channel.id}
         onClick={() => this.changeChannel(channel)}
@@ -83,5 +82,7 @@ class Starred extends Component {
   }
 }
 
-
-export default connect(null, { setCurrentChannel, setPrivateChannel })(Starred);
+export default connect(
+  null,
+  { setCurrentChannel, setPrivateChannel }
+)(Starred);
