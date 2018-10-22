@@ -45,3 +45,20 @@ export default firebase;
 - Element.scrollIntoView()
 - https://developer.mozilla.org/ja/docs/Web/API/Element/scrollIntoView
 - これ便利
+
+## firebase
+
+- ストレージ、DB 周りのルールは運用時変更する
+
+### firebase デプロイ
+
+- npm i firebase-tools -g
+- firebase login で y を押してログインする
+- firebase init
+- もろもろぽちぽちしていく
+- npm run build で public とデプロイ用のファイルを作る
+- firebase deploy
+
+## 完成図
+
+![完成図](./img/1.png)
